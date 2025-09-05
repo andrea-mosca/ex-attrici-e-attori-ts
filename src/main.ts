@@ -1,8 +1,8 @@
 type Person={
   readonly id: number,
   readonly name: string,
-  birth_day: number,
-  death_day?:number,
+  birth_year: number,
+  death_year?:number,
   biography: string,
   image: string
 }
@@ -33,8 +33,12 @@ function isActress(dati:unknown): dati is Actress{
     typeof dati === "object" && dati !== null &&
     "id" in dati && typeof dati.id === "number" && //proprietà id
     "name" in dati && typeof dati.name === "string" && // proprietà name
-    "birth_day" in dati && typeof dati.birth_day === "number" &&//proprietà birth_day
-    "death_day" in dati && typeof dati.death_day === "number" &&//proprietà death_day
+    "birth_year" in dati && typeof dati.birth_year === "number" &&//proprietà birth_year
+    (!("death_year" in dati) || 
+    (dati as any).death_year === undefined || 
+    typeof (dati as any).death_year === "number"
+    ) && // proprietà death_year
+
     "biography" in dati && typeof dati.biography === "string" && // proprietà biography
     "image" in dati && typeof dati.image === "string" && // proprietà image
     "most_famous_movies" in dati && dati.most_famous_movies instanceof Array && // proprietà most_famous_movies
@@ -48,10 +52,12 @@ function isActress(dati:unknown): dati is Actress{
 async function getActress(id:number):Promise<Actress | null >{
   try{
   const response = await fetch(`http://localhost:3333/actresses/${id}`);
-  if(response.ok){
+  
+  if(!response.ok){
     throw new Error(`errore HTTP ${response.status}: ${response.statusText}`)
   }
   const dati: unknown =await response.json();
+  console.log("Dati ricevuti:", dati);
   if(!isActress(dati)){
     throw new Error(`Formato non valido`)
   }
@@ -63,5 +69,11 @@ async function getActress(id:number):Promise<Actress | null >{
     }
     return null;
   }
-  
 }
+(async()=> {
+  const actress = await getActress(1);
+  console.log(actress);
+})()
+
+
+// function getAllActresses
