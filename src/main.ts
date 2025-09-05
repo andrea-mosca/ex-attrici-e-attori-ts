@@ -102,3 +102,22 @@ async function getAllActresses():Promise<Actress[]>{
   console.log(`array di attrici:`, attrici);
   
 })()
+
+async function getActresses(numeri:number[]):Promise<(Actress | null)[]>{
+  try{
+    const promises =numeri.map((n)=>getActress(n));
+    const results= await Promise.all(promises);
+    return results;
+  }catch(err){
+    if(err instanceof Error){
+      console.error(`Errore durante il caricamento delle attrici`, err);
+    }else{console.error(`Errore sconosciuto`, err);
+    }
+  }
+  return [null];
+}
+
+(async()=>{
+  const dati= await(getActresses([1,2,3,4]));
+  console.log(`elenco attrici:`, dati)
+})()
